@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expected Impermanent Loss Explorer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <!-- Load Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <header class="text-center py-6 bg-white shadow-md rounded-xl mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-indigo-700 tracking-tight">
+                Expected Impermanent Loss (EIL) Explorer
+            </h1>
+            <p class="mt-2 text-lg text-gray-500">
+                Interactive tools and visualizations for DeFi researchers and the public.
+            </p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Visualization Card (Main Column) -->
+            <div class="lg:col-span-2 bg-white p-6 shadow-xl rounded-xl">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4 flex justify-between items-center">
+                    EIL Time Series (Hourly Updates)
+                    <span id="last-updated" class="text-sm font-medium text-indigo-500">Fetching data...</span>
+                </h2>
+                <div class="relative h-96">
+                    <canvas id="eilChart"></canvas>
+                </div>
+                <!-- Data Source Message -->
+                <div id="data-status" class="mt-4 p-3 bg-indigo-50 text-indigo-700 rounded-lg text-sm">
+                    Data Source: **Placeholder API**. The visualization updates hourly.
+                </div>
+            </div>
+
+            <!-- Controls & Documentation Card (Sidebar) -->
+            <div class="lg:col-span-1 space-y-8">
+                
+                <!-- Controls Card -->
+                <div class="bg-white p-6 shadow-xl rounded-xl">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Simulation Controls</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="price-ratio" class="block text-sm font-medium text-gray-700">
+                                Current Price Ratio (Token A / Token B)
+                            </label>
+                            <input type="number" id="price-ratio" value="1.05" step="0.01"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                        </div>
+                        <div>
+                            <label for="volatility" class="block text-sm font-medium text-gray-700">
+                                Implied Volatility (%)
+                            </label>
+                            <input type="number" id="volatility" value="50"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                        </div>
+                        <button onclick="updateChartData(true)"
+                            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                            Recalculate & Refresh Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Concept Summary Card -->
+                <div class="bg-white p-6 shadow-xl rounded-xl">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">What is Impermanent Loss?</h3>
+                    <p class="text-gray-600 text-sm">
+                        Impermanent Loss (IL) is the temporary loss of funds that occurs when a liquidity provider’s staked assets change in value compared to when they were deposited. Expected IL (EIL) quantifies this risk over time.
+                    </p>
+                    <a href="https://sites.google.com/view/lorenzo-schoenleber/menu/research?authuser=0" target="_blank"
+                   class="w-full sm:w-auto px-6 py-3 border border-secondary text-secondary font-semibold rounded-xl shadow-md hover:bg-secondary hover:text-white transition duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-500 focus:ring-opacity-50 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    Read Full Research Paper
+                </a>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-sm text-gray-400">
+            &copy; 2025 EIL Research Project. Hosted for free on Cloudflare Pages.
+        </footer>
+    </div>
+
+    <script>
+        // --- Chart Setup ---
+        const ctx = document.getElementById('eilChart').getContext('2d');
+        let eilChart;
+        let dataInterval;
+
+        // Utility function to generate mock time-series data
+        function generateMockData() {
+            const dataPoints = 24; // Last 24 hours
+            const now = Date.now();
+            const mockData = [];
+            
+            // Simple dynamic base based on controls (for simulation)
+            const priceRatio = parseFloat(document.getElementById('price-ratio').value) || 1.0;
+            const volatility = (parseFloat(document.getElementById('volatility').value) / 100) || 0.5;
+            const baseValue = (Math.abs(priceRatio - 1) * 10) + (volatility * 0.1);
+
+            for (let i = dataPoints; i >= 0; i--) {
+                const timestamp = now - (i * 3600000); // i hours ago
+                // Generate a value that fluctuates around a dynamic base
+                let value = baseValue + (Math.sin(i / 3) * 0.005) + (Math.random() * 0.002);
+                value = Math.max(0.001, value); // Ensure value is positive
+                
+                mockData.push({
+                    timestamp: new Date(timestamp).toISOString(),
+                    eilValue: parseFloat(value.toFixed(4))
+                });
+            }
+            return mockData;
+        }
+
+        // Simulates fetching real hourly data from an external API
+        async function fetchExpectedImpermanentLoss() {
+            document.getElementById('data-status').innerHTML = 'Data Source: **Placeholder API**. Fetching latest data...';
+            
+            // 1. Placeholder for actual API call
+            // const API_ENDPOINT = 'YOUR_API_ENDPOINT_HERE';
+            // const response = await fetch(API_ENDPOINT);
+            // if (!response.ok) throw new Error('Failed to fetch EIL data');
+            // const data = await response.json();
+            
+            // 2. Mock Data Simulation (Remove this section when integrating real API)
+            const data = generateMockData();
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network latency
+
+            const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+            const values = data.map(d => d.eilValue);
+
+            const latestUpdate = new Date().toLocaleString();
+            document.getElementById('last-updated').innerText = `Last Updated: ${latestUpdate}`;
+            document.getElementById('data-status').innerHTML = 'Data Source: **Placeholder API**. Next update scheduled for the top of the hour.';
+            
+            return { labels, values };
+        }
+
+        // Renders or updates the Chart.js visualization
+        async function updateChartData(isManual = false) {
+            try {
+                if (isManual) {
+                    document.getElementById('data-status').innerHTML = 'Data Source: **Placeholder API**. Manually refreshing...';
+                }
+                
+                const { labels, values } = await fetchExpectedImpermanentLoss();
+
+                if (eilChart) {
+                    // Update existing chart
+                    eilChart.data.labels = labels;
+                    eilChart.data.datasets[0].data = values;
+                    eilChart.update();
+                } else {
+                    // Initialize new chart
+                    eilChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Expected Impermanent Loss (%)',
+                                data: values,
+                                borderColor: 'rgb(79, 70, 229)', // indigo-600
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: 'rgb(79, 70, 229)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'EIL Value (%)' }
+                                },
+                                x: {
+                                    title: { display: true, text: 'Time' }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                tooltip: { mode: 'index', intersect: false }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error updating EIL chart:", error);
+                document.getElementById('data-status').innerHTML = `<span class="text-red-600">ERROR: Could not fetch data. See console for details.</span>`;
+            }
+        }
+
+        // --- Data Refresh Logic ---
+        function setupHourlyRefresh() {
+            // Run initially
+            updateChartData();
+
+            // Calculate delay until the next full hour
+            const now = new Date();
+            const minutesToNextHour = 60 - now.getMinutes();
+            const secondsToNextHour = minutesToNextHour * 60 - now.getSeconds() - 1; // -1 to be safe
+
+            // Set the first timeout to align with the top of the hour
+            console.log(`Initial update complete. Next scheduled refresh in ${secondsToNextHour} seconds (top of the hour).`);
+            setTimeout(() => {
+                // Run the update exactly at the top of the hour
+                updateChartData();
+                
+                // Then, set up the recurring hourly interval (3600000ms = 1 hour)
+                dataInterval = setInterval(updateChartData, 3600000);
+            }, secondsToNextHour * 1000); 
+        }
+
+        // Start the application when the window loads
+        window.onload = setupHourlyRefresh;
+        
+    </script>
+</body>
+</html>
