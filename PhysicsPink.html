@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Physics Explorer: Lessons and Quizzes</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons for aesthetic buttons/navigation -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // New Pink/Rose Color Scheme
+                        'physics-dark': '#86198f',        // Deep Purple/Magenta (Nav & Primary Text)
+                        'physics-background': '#fdf2f8',  // Very Light Pink/Rose (Body Background)
+                        'physics-primary': '#db2777',     // Rose Pink (Accent/Buttons)
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base styling for interactive elements */
+        .nav-button:hover {
+            background-color: #be185d; /* Darker pink hover */
+            transform: scale(1.02);
+        }
+        .lesson-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .lesson-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-physics-background min-h-screen font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-physics-dark shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-white tracking-wider">Physics Explorer</span>
+                </div>
+                <div class="flex space-x-4">
+                    <button class="nav-button text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200 bg-physics-primary" 
+                            onclick="showPage('home')">Home</button>
+                    <button class="nav-button text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200" 
+                            onclick="showPage('lessons')">Lessons</button>
+                    <button class="nav-button text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200" 
+                            onclick="showPage('quiz')">Quiz</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Home Page -->
+        <section id="page-home" class="page-content">
+            <div class="text-center p-10 bg-white rounded-xl shadow-xl">
+                <h2 class="text-5xl font-extrabold text-physics-dark mb-4">Welcome to the World of Physics</h2>
+                <p class="text-xl text-gray-600 mb-8">
+                    Explore fundamental concepts through mini-lessons and test your knowledge with interactive quizzes.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <button class="bg-physics-primary text-white font-semibold py-3 px-6 rounded-xl text-lg hover:bg-pink-700 transition duration-300 shadow-lg" 
+                            onclick="showPage('lessons')">Start Learning</button>
+                    <button class="bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-xl text-lg hover:bg-gray-300 transition duration-300 shadow-lg" 
+                            onclick="showPage('quiz')">Take a Quiz</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lessons Page -->
+        <section id="page-lessons" class="page-content hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Mini-Lessons</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Lesson 1: Mechanics -->
+                <div class="lesson-card bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-semibold text-physics-dark mb-3 flex items-center">
+                        <i data-lucide="rocket" class="w-6 h-6 mr-2 text-physics-primary"></i>Classical Mechanics
+                    </h3>
+                    <p class="text-gray-700 mb-4">
+                        Discover the laws governing motion and forces. We cover Newton's three laws, momentum, and energy conservation.
+                    </p>
+                    <button class="text-sm text-physics-primary hover:underline" onclick="showLesson('mechanics')">Read Full Lesson →</button>
+                </div>
+
+                <!-- Lesson 2: Electromagnetism -->
+                <div class="lesson-card bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-semibold text-physics-dark mb-3 flex items-center">
+                        <i data-lucide="zap" class="w-6 h-6 mr-2 text-physics-primary"></i>Electromagnetism
+                    </h3>
+                    <p class="text-gray-700 mb-4">
+                        Understand the relationship between electricity and magnetism, including Ohm's Law and basic circuit principles.
+                    </p>
+                    <button class="text-sm text-physics-primary hover:underline" onclick="showLesson('electromagnetism')">Read Full Lesson →</button>
+                </div>
+
+                <!-- Lesson 3: Quantum Physics -->
+                <div class="lesson-card bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <h3 class="text-2xl font-semibold text-physics-dark mb-3 flex items-center">
+                        <i data-lucide="atom" class="w-6 h-6 mr-2 text-physics-primary"></i>Quantum Physics
+                    </h3>
+                    <p class="text-gray-700 mb-4">
+                        Explore the weird world of the very small, focusing on particle-wave duality and the Photoelectric Effect.
+                    </p>
+                    <button class="text-sm text-physics-primary hover:underline" onclick="showLesson('quantum')">Read Full Lesson →</button>
+                </div>
+            </div>
+            
+            <!-- Individual Lesson Container -->
+            <div id="lesson-content" class="mt-10 p-8 bg-white rounded-xl shadow-xl hidden">
+                <button onclick="showPage('lessons')" class="text-physics-primary hover:text-pink-700 mb-4 flex items-center text-sm">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Lessons
+                </button>
+                <div id="current-lesson">
+                    <!-- Lesson content will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Page -->
+        <section id="page-quiz" class="page-content hidden">
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-xl">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Physics Fundamentals Quiz</h2>
+
+                <div id="quiz-area">
+                    <!-- Quiz questions and controls will be injected here -->
+                </div>
+
+                <div id="quiz-results" class="hidden text-center mt-8 p-6 rounded-lg border-4">
+                    <h3 class="text-3xl font-bold mb-3" id="result-title"></h3>
+                    <p class="text-xl mb-4" id="result-score"></p>
+                    <button class="bg-physics-dark text-white font-semibold py-2 px-4 rounded-lg hover:bg-physics-primary transition duration-300" 
+                            onclick="startQuiz()">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script type="text/javascript">
+        // --- 1. QUIZ DATA AND STATE ---
+        const quizQuestions = [
+            {
+                question: "What does Newton's Second Law of Motion primarily define?",
+                options: ["Inertia", "Force ($F = ma$)", "Conservation of Momentum"],
+                correct: 1
+            },
+            {
+                question: "What is the unit of electrical resistance, as defined by Ohm's Law ($V = IR$)?",
+                options: ["Ampere (A)", "Ohm ($\\Omega$)", "Volt (V)"],
+                correct: 1
+            },
+            {
+                question: "The Photoelectric Effect proves that light can sometimes behave as what?",
+                options: ["A continuous wave", "A standing wave", "A stream of particles (photons)"],
+                correct: 2
+            },
+            {
+                question: "Which of the following describes the Law of Conservation of Energy?",
+                options: ["Energy is always lost as heat.", "Energy can be created and destroyed.", "Energy cannot be created or destroyed, only transformed."],
+                correct: 2
+            },
+            {
+                question: "In a series circuit, what remains constant across all components?",
+                options: ["Voltage", "Current", "Resistance"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // --- 2. LESSON CONTENT DATA ---
+        const lessonContent = {
+            mechanics: {
+                title: "Introduction to Classical Mechanics",
+                html: `
+                    <h3 class="text-xl font-semibold mb-3">Newton's Laws of Motion</h3>
+                    <p class="mb-4">Classical Mechanics describes the motion of macroscopic objects, from projectiles to astronomical bodies. It is built upon three foundational laws formulated by Sir Isaac Newton.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>**First Law (Inertia):** An object remains in its state of rest or uniform motion unless acted upon by a net external force.</li>
+                        <li>**Second Law (Force):** The acceleration ($a$) of an object is directly proportional to the net force ($F$) acting upon it and inversely proportional to its mass ($m$). The famous formula is $F = ma$.</li>
+                        <li>**Third Law (Action-Reaction):** For every action, there is an equal and opposite reaction. If object A exerts a force on object B, object B exerts an equal and opposite force on object A.</li>
+                    </ul>
+                    <h3 class="text-xl font-semibold mt-4 mb-3">Momentum and Energy</h3>
+                    <p class="text-gray-700">Momentum ($p$) is a measure of the mass in motion ($p=mv$). The **Law of Conservation of Momentum** states that the total momentum of a closed system remains constant. Similarly, the **Law of Conservation of Energy** states that energy cannot be created or destroyed, only transformed from one form to another (e.g., kinetic to potential energy).</p>
+                `
+            },
+            electromagnetism: {
+                title: "Fundamentals of Electromagnetism",
+                html: `
+                    <h3 class="text-xl font-semibold mb-3">Ohm's Law</h3>
+                    <p class="mb-4">Ohm's Law is central to understanding electric circuits. It describes the relationship between voltage, current, and resistance in an electrical circuit. [Image of Ohm's Law circuit diagram]</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>**Voltage ($V$):** The electric potential difference, measured in Volts. It's the 'push' that moves the current.</li>
+                        <li>**Current ($I$):** The rate of flow of electric charge, measured in Amperes.</li>
+                        <li>**Resistance ($R$):** The opposition to the flow of current, measured in Ohms ($\\Omega$).</li>
+                    </ul>
+                    <p class="mt-3 text-gray-700">The relationship is expressed as: $$V = IR$$</p>
+                    <h3 class="text-xl font-semibold mt-4 mb-3">Circuit Types</h3>
+                    <p class="text-gray-700">Circuits are generally classified as series or parallel. In a **series circuit**, components are connected end-to-end, and the current is the same throughout. In a **parallel circuit**, components are connected across the same two points, and the voltage is the same across each branch.</p>
+                `
+            },
+            quantum: {
+                title: "Introduction to Quantum Physics",
+                html: `
+                    <h3 class="text-xl font-semibold mb-3">The Photoelectric Effect</h3>
+                    <p class="mb-4">Quantum physics deals with the nature of matter and energy at the atomic and subatomic levels. The Photoelectric Effect, explained by Albert Einstein, provided key evidence for the **quantization of light**.</p>
+                    <p class="text-gray-700 mb-4">The effect shows that when light shines on a metal surface, electrons are emitted. Crucially, the emission only occurs if the light's **frequency** is above a certain threshold, regardless of its intensity. This could not be explained by the classical wave theory of light.</p>
+                    <p class="text-gray-700 mb-4">Einstein proposed that light is composed of discrete packets of energy called **photons**. The energy of a single photon ($E$) is directly proportional to its frequency ($\\nu$):</p>
+                    <p class="mt-3 text-center">$$E = h\\nu$$</p>
+                    <p class="text-gray-700 mt-4">Where $h$ is Planck's constant. This demonstrated the **particle nature of light**, a concept foundational to quantum mechanics.</p>
+                `
+            }
+        };
+
+        // --- 3. PAGE NAVIGATION ---
+
+        /** Shows the requested main page and hides all others. */
+        const showPage = (pageId) => {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            
+            // Re-render icons after DOM manipulation
+            lucide.createIcons();
+
+            // Special handling for quiz page
+            if (pageId === 'quiz') {
+                startQuiz();
+            }
+        };
+
+        /** Shows a specific lesson, hiding the main lesson grid. */
+        const showLesson = (lessonKey) => {
+            const container = document.getElementById('lesson-content');
+            const lessonDiv = document.getElementById('current-lesson');
+            const lesson = lessonContent[lessonKey];
+
+            document.querySelectorAll('.lesson-card').forEach(card => card.classList.add('hidden'));
+            
+            // Set the content
+            lessonDiv.innerHTML = `
+                <h2 class="text-3xl font-bold text-physics-dark mb-4">${lesson.title}</h2>
+                <div class="prose max-w-none">${lesson.html}</div>
+            `;
+            container.classList.remove('hidden');
+
+            // Re-render icons
+            lucide.createIcons();
+        };
+
+        // --- 4. QUIZ LOGIC ---
+
+        /** Initializes the quiz state and starts the first question. */
+        const startQuiz = () => {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-area').classList.remove('hidden');
+            loadQuestion();
+        };
+
+        /** Renders the current question and options. */
+        const loadQuestion = () => {
+            if (currentQuestionIndex >= quizQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const q = quizQuestions[currentQuestionIndex];
+            let optionsHtml = q.options.map((option, index) => `
+                <button 
+                    onclick="checkAnswer(${index})" 
+                    class="w-full text-left py-3 px-4 mb-3 bg-gray-100 rounded-lg border-2 border-gray-200 hover:bg-physics-primary hover:text-white transition duration-200 font-medium text-gray-800 hover:text-white"
+                >
+                    ${String.fromCharCode(65 + index)}. ${option}
+                </button>
+            `).join('');
+
+            const quizArea = document.getElementById('quiz-area');
+            quizArea.innerHTML = `
+                <div class="text-xl font-semibold mb-4 text-gray-800">
+                    Question ${currentQuestionIndex + 1} of ${quizQuestions.length}
+                </div>
+                <div class="text-2xl font-bold mb-6 p-4 bg-physics-background rounded-lg">
+                    ${q.question}
+                </div>
+                ${optionsHtml}
+                <div id="quiz-feedback" class="mt-4 p-3 rounded-lg hidden"></div>
+            `;
+        };
+
+        /** Checks the user's selected answer against the correct one. */
+        const checkAnswer = (selectedOptionIndex) => {
+            const q = quizQuestions[currentQuestionIndex];
+            const isCorrect = (selectedOptionIndex === q.correct);
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const optionButtons = document.querySelectorAll('#quiz-area button');
+
+            // Disable all buttons to prevent double-clicking
+            optionButtons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                score++;
+                feedbackEl.classList.remove('hidden', 'bg-red-100', 'text-red-800');
+                feedbackEl.classList.add('bg-green-100', 'text-green-800');
+                feedbackEl.textContent = "Correct! Well done.";
+            } else {
+                feedbackEl.classList.remove('hidden', 'bg-green-100', 'text-green-800');
+                feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                feedbackEl.textContent = `Incorrect. The correct answer was ${String.fromCharCode(65 + q.correct)}.`;
+            }
+
+            // Highlight correct/incorrect option
+            optionButtons[selectedOptionIndex].classList.add(isCorrect ? 'bg-green-500' : 'bg-red-500', 'text-white');
+            optionButtons[q.correct].classList.add('bg-green-500', 'text-white');
+
+            // Move to next question after a brief pause
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1500);
+        };
+
+        /** Displays the final quiz score and results. */
+        const showResults = () => {
+            document.getElementById('quiz-area').classList.add('hidden');
+            const resultsEl = document.getElementById('quiz-results');
+            resultsEl.classList.remove('hidden');
+
+            const percent = (score / quizQuestions.length) * 100;
+            const titleEl = document.getElementById('result-title');
+            const scoreEl = document.getElementById('result-score');
+
+            if (percent === 100) {
+                titleEl.textContent = "Perfect Score!";
+                resultsEl.classList.add('border-green-500');
+                titleEl.classList.add('text-green-600');
+            } else if (percent >= 70) {
+                titleEl.textContent = "Great Job!";
+                // Use a custom border color based on the new theme for good scores
+                resultsEl.classList.add('border-physics-primary');
+                titleEl.classList.add('text-physics-primary');
+            } else {
+                titleEl.textContent = "Keep Practicing!";
+                resultsEl.classList.add('border-yellow-500');
+                titleEl.classList.add('text-yellow-600');
+            }
+
+            scoreEl.textContent = `You scored ${score} out of ${quizQuestions.length} (${percent.toFixed(0)}%).`;
+        };
+
+        // --- 5. INITIALIZATION ---
+
+        /** Initializes the application on load. */
+        window.onload = () => {
+            // Create Lucide icons initially
+            lucide.createIcons();
+        };
+
+    </script>
+</body>
+</html>
