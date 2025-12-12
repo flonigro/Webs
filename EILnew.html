@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expected Impermanent Loss (EIL) Explorer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        .data-point {
+            /* Custom CSS for a clean hover effect on data points */
+            transition: all 0.2s ease-in-out;
+        }
+        .data-point:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -4px rgba(37, 99, 235, 0.1);
+        }
+        /* Custom styles for the chart placeholder */
+        #chart-placeholder {
+            min-height: 400px;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <header class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-2">
+            DeFi Risk Navigator: Expected Impermanent Loss (EIL)
+        </h1>
+        <p class="text-xl text-indigo-600 font-medium">Making advanced DeFi research accessible and visual.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- Key Metrics Section -->
+        <section class="grid md:grid-cols-3 gap-6">
+            <div class="card bg-white p-6 rounded-xl data-point">
+                <p class="text-sm font-semibold text-gray-500 uppercase">Latest EIL</p>
+                <p id="latest-eil" class="text-3xl font-bold text-indigo-700 mt-1">--</p>
+            </div>
+            <div class="card bg-white p-6 rounded-xl data-point">
+                <p class="text-sm font-semibold text-gray-500 uppercase">24h Change</p>
+                <p id="change-24h" class="text-3xl font-bold text-gray-700 mt-1">--</p>
+            </div>
+            <div class="card bg-white p-6 rounded-xl data-point">
+                <p class="text-sm font-semibold text-gray-500 uppercase">Implied Correlation</p>
+                <p id="implied-corr" class="text-3xl font-bold text-gray-700 mt-1">--</p>
+            </div>
+        </section>
+
+        <!-- Visualization Section -->
+        <section class="card bg-white p-6 rounded-xl">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">EIL Time Series Visualization</h2>
+            <div id="chart-placeholder">
+                Interactive Chart Placeholder: (Future implementation using Chart.js or D3.js)
+                <br>
+                This area will display the hourly expected impermanent loss data.
+            </div>
+        </section>
+
+        <!-- Theoretical Background Section -->
+        <section class="card bg-white p-6 rounded-xl">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">The Theory: Implied Impermanent Loss (IIL)</h2>
+            <div class="space-y-4 text-gray-700">
+                <p class="text-lg font-medium text-indigo-600">Based on the research "Implied Impermanent Loss: A Cross-Sectional Analysis of Decentralized Liquidity Pools."</p>
+                
+                <h3 class="text-xl font-semibold mt-6">Introduction and Context</h3>
+                <p>The core concept analyzes the risk-return trade-off for Liquidity Providers (LPs) in Decentralized Exchanges (DEXs) and introduces a sophisticated measure, **Implied Impermanent Loss** ($\text{IIL}$), by relating the risk of providing liquidity to derivative pricing models.</p>
+
+                <h3 class="text-xl font-semibold mt-6">The Concept of Impermanent Loss (IL)</h3>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>\textbf{Definition:} $\text{IL}$ is the opportunity cost faced by an LP compared to simply holding ($\text{HODLing}$) the underlying assets. It occurs when arbitrageurs trade against the Automated Market Maker ($\text{AMM}$) pool due to external price divergence.</li>
+                    <li>\textbf{Mechanism:} Arbitrageurs profit by buying the cheaper asset from the pool and selling the expensive one, effectively rebalancing the pool to match the external market price. This rebalancing is the source of the loss for the LP, relative to the HODL strategy.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-6">Implied Impermanent Loss ($\text{IIL}$) and Risk Measurement</h3>
+                <p>The research links the on-chain LP risk to the derivative market using option-implied information, providing a forward-looking measure of risk.</p>
+                
+                <h4 class="text-lg font-medium mt-4">Theoretical Framework</h4>
+                <p>The $\text{IL}$ for an LP is primarily driven by the \textbf{variance of the relative price} of the two pooled assets. $\text{IIL}$ is defined as the expectation of the relative price's integrated variance under a risk-neutral measure ($\mathbb{Q}$):</p>
+                <p class="text-center py-2 bg-gray-50 rounded-lg shadow-inner">
+                    $$ \text{IIL}_t = \mathbb{E}^{\mathbb{Q}}\left[\int_{t}^{T} \sigma_{P^R}^2(u) du \right] $$
+                </p>
+                <p>Where $P^R$ is the relative price and $\sigma_{P^R}^2$ is its instantaneous variance. This volatility can be mathematically decomposed into the individual volatilities of the two tokens ($\sigma_1, \sigma_2$) and their correlation ($\rho$).</p>
+
+                <h4 class="text-lg font-medium mt-4">Key Implied Measures</h4>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>\textbf{Implied Impermanent Loss ($\text{IIL}$):} A forward-looking, positively priced risk factor.</li>
+                    <li>\textbf{Implied Correlation ($\text{ICORR}$):} The model extracts an implied correlation between the pool tokens. Importantly, LPs **prefer high correlation** between assets, as highly correlated price moves reduce changes in the relative price, thereby minimizing impermanent loss. Consequently, $\text{ICORR}$ is a **negatively priced** risk factor, meaning pools with lower correlation (higher risk) earn a higher premium.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Technical and Collaboration Section -->
+        <section class="card bg-white p-6 rounded-xl">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">Project Roadmap & Technical Notes</h2>
+            <div class="space-y-4 text-gray-700">
+                <h3 class="text-xl font-semibold mt-6 text-indigo-600">Hosting \& Deployment Research</h3>
+                <p>For deployment, the most robust free options that handle dynamic, scheduled data fetching are:</p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>\textbf{Cloudflare Pages:} Excellent for front-end hosting and integrating with Cloudflare Workers for serverless data fetching (which can run the hourly job).</li>
+                    <li>\textbf{Vercel:} Great developer experience, perfect for front-end deployment, and includes serverless functions that can be used for the hourly update.</li>
+                    <li>\textbf{Firebase Hosting:} Ideal if you plan to use other Google services like **Firestore (Database)** or **Cloud Functions (Hourly Job)**, offering a generous free tier for static sites and small databases.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-6 text-indigo-600">Next Steps: Implementing Data Fetching</h3>
+                <p>The JavaScript section below is ready for the data fetching implementation. Once you have a reliable API endpoint or data source that provides the hourly $\text{IIL}$ time series, we can replace the placeholder function (<code>fetchEILData</code>) with the real API call. We will use a library like **Chart.js** to render the data in the <code>#chart-placeholder</code> div.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Helper Functions ---
+            
+            /**
+             * Simulate fetching hourly EIL data from an external API endpoint.
+             * In a real implementation, this would involve a fetch() request to your API.
+             * The API call should have an exponential backoff retry mechanism.
+             */
+            async function fetchEILData() {
+                // Placeholder for real API data fetching logic.
+                // Replace this with a fetch call to your hourly-updated endpoint.
+                console.log("Attempting to fetch EIL data...");
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+
+                // Mock data structure (You will receive an array of objects)
+                const mockData = [
+                    { timestamp: new Date(Date.now() - 24 * 3600 * 1000), eil: 0.150, corr: 0.70 },
+                    { timestamp: new Date(Date.now() - 12 * 3600 * 1000), eil: 0.145, corr: 0.72 },
+                    { timestamp: new Date(Date.now() - 1 * 3600 * 1000), eil: 0.155, corr: 0.69 },
+                    { timestamp: new Date(Date.now()), eil: 0.160, corr: 0.68 }, // Latest
+                ];
+
+                return {
+                    latest: mockData[mockData.length - 1],
+                    previous: mockData[mockData.length - 2], // For 24h comparison
+                    history: mockData
+                };
+            }
+
+            // --- Main Application Logic ---
+
+            async function initializeDashboard() {
+                const latestEIL = document.getElementById('latest-eil');
+                const change24h = document.getElementById('change-24h');
+                const impliedCorr = document.getElementById('implied-corr');
+                
+                try {
+                    const data = await fetchEILData();
+                    const latest = data.latest;
+                    const previous = data.previous || data.history[0]; // Fallback if only one data point
+
+                    // 1. Update Latest EIL
+                    latestEIL.textContent = `${(latest.eil * 100).toFixed(2)}%`;
+
+                    // 2. Calculate and Update 24h Change
+                    const change = latest.eil - previous.eil;
+                    const changePercent = (change / previous.eil) * 100;
+                    
+                    change24h.textContent = `${changePercent.toFixed(2)}%`;
+                    change24h.classList.remove('text-gray-700', 'text-green-600', 'text-red-600');
+
+                    // Style the change indicator based on positive/negative
+                    if (changePercent > 0) {
+                        change24h.classList.add('text-red-600'); // EIL increase is often a negative signal for LP returns
+                        change24h.innerHTML += ' &uarr;'; 
+                    } else if (changePercent < 0) {
+                        change24h.classList.add('text-green-600'); 
+                        change24h.innerHTML += ' &darr;'; 
+                    } else {
+                        change24h.classList.add('text-gray-700');
+                    }
+
+                    // 3. Update Implied Correlation
+                    impliedCorr.textContent = latest.corr.toFixed(3);
+                    
+                    // Future: Call function to draw the chart here (e.g., drawChart(data.history))
+
+                } catch (error) {
+                    console.error("Failed to load EIL data:", error);
+                    latestEIL.textContent = "Error";
+                    change24h.textContent = "Error";
+                    impliedCorr.textContent = "Error";
+                }
+            }
+
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html>
