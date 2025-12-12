@@ -1,0 +1,44 @@
+/*--- Banner superior ---*/
+.top_panel_banner {display: none}
+
+/*--- Estilo ---*/
+.site {hyphens: none}
+
+/*@media (max-width: 640px) {
+	.section-color {
+	height: 400px;
+	}}*/
+
+/*--- Estilo texto ---*/
+h1, h2, h3, h4, h5, h6 {margin: 0 0 5px 0 !important}
+
+.section-color h1, .section-color h2, .section-color h3, .section-color h4, .section-color h5, .section-color h6, .section-color p {color: #ffffff !important}
+
+.title-style {
+	font-family: 'Courgette', cursive;
+	font-size: 80px;
+	color: #ffffff}
+
+@media (max-width: 640px) {
+.title-style {font-size: 60px}}
+
+.divider {
+	border: solid 2px #F15084;
+	width: 80px;
+	margin: 0 auto}
+
+/*--- Menú ---*/
+#content {margin-top: 0px; margin-bottom: 0px}
+
+.site-header__wrap {padding-bottom: 10px !important}
+
+.logo {max-height: 100px; border-radius: 100px}
+
+.main-navigation li a {text-transform: none !important}
+
+.home .main-navigation a, .menu-item-has-children:before {color: #383838 !important}
+
+.main-navigation a:hover, .main-navigation .current-menu-item>a {color: #2E3681 !important}
+
+.site-header {box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.1)}
+
